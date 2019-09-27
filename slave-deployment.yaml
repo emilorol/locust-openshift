@@ -1,0 +1,103 @@
+kind: Template
+apiVersion: v1
+labels:
+  template: "locust"
+metadata:
+  name: locust-slave
+objects:
+  - kind: DeploymentConfig
+    apiVersion: v1
+    metadata:
+      name: locust-slave
+      namespace: ${NAMESPACE}
+    spec:
+      replicas: 1
+      template:
+        metadata:
+          labels:
+            app: locust-slave
+        spec:
+          containers:
+          - name: locust-slave
+            image: ${LOCUST_SLAVE_IMAGE}
+            env:
+              - name: CONFIG_HASH
+                value: TO_BE_CHANGED
+              - name: ATTACKED_HOST
+                valueFrom:
+                  configMapKeyRef:
+                    name: host-url
+                    key: ATTACKED_HOST
+              - name: LOCUST_MODE
+                value: SLAVE
+              - name: LOCUST_MASTER
+                value: $(LOCUST_SERVICE_HOST)
+            resources:
+              limits:
+                cpu: "0.5"
+                memory: "1024Mi"
+            ports:
+            - containerPort: 8888
+            volumeMounts:
+            - name: locust-scripts
+              mountPath: /locust
+              readOnly: true
+          dnsPolicy: ClusterFirst
+          restartPolicy: Always
+          securityContext:
+            privileged: false
+          volumes:
+          - name: locust-scripts
+            configMap:
+              name: script-file
+
+  # Enable auto scaling
+  # Careful as Locust reset the test when sense
+  # a new slave
+
+  # This config work for me on OpenShift 3.11
+  # - kind: HorizontalPodAutoscaler
+  #   apiVersion: autoscaling/v2beta1
+  #   metadata:
+  #     name: locust-slave
+  #     namespace: ${NAMESPACE}
+  #   spec:
+  #     scaleTargetRef:
+  #       kind: DeploymentConfig
+  #       name: locust-slave
+  #       apiVersion: apps.openshift.io/v1
+  #     minReplicas: 1
+  #     maxReplicas: 10
+  #     metrics:
+  #     - type: Resource
+  #       resource:
+  #         name: cpu
+  #         targetAverageUtilization: 80
+
+  # This config worked for me on Minishift
+  # - kind: HorizontalPodAutoscaler
+  #   apiVersion: autoscaling/v1
+  #   metadata:
+  #     name: locust-slave
+  #     namespace: ${NAMESPACE}
+  #   spec:
+  #     scaleTargetRef:
+  #       kind: DeploymentConfig
+  #       name: locust-slave
+  #       apiVersion: apps.openshift.io/v1
+  #     minReplicas: 1
+  #     maxReplicas: 10
+  #     targetCPUUtilizationPercentage: 80
+
+parameters:
+- name: NAMESPACE
+  displayName: Namespace
+  description: Namespace where the Locust is running
+  value: locust
+  required: true
+
+- name: LOCUST_SLAVE_IMAGE
+  displayName: Locust-Slave docker image
+  description: Name of the image to be used.
+  value: grubykarol/locust:0.11.0-python3.6-alpine3.9
+  required: true
