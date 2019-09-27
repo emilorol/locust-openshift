@@ -1,0 +1,135 @@
+kind: Template
+apiVersion: v1
+labels:
+  template: "locust"
+metadata:
+  name: locust-master
+objects:
+  - kind: Service
+    apiVersion: v1
+    metadata:
+      name: locust
+      namespace: ${NAMESPACE}
+    spec:
+      selector:
+        app: locust-master
+      ports:
+        - name: "communication"
+          protocol: TCP
+          port: 5557
+        - name: "communication-plus-1"
+          protocol: TCP
+          port: 5558
+        - name: "web-ui"
+          protocol: TCP
+          port: 8089
+      type: LoadBalancer
+
+  - apiVersion: route.openshift.io/v1
+    kind: Route
+    metadata:
+      name: app
+    spec:
+      port:
+        targetPort: web-ui
+      to:
+        kind: Service
+        name: locust
+        weight: 100
+      wildcardPolicy: None
+
+  - kind: DeploymentConfig
+    apiVersion: v1
+    metadata:
+      name: locust-master
+      namespace: ${NAMESPACE}
+    spec:
+      replicas: 1
+      template:
+        metadata:
+          labels:
+            app: locust-master
+        spec:
+          containers:
+          - name: locust-master
+            image: ${LOCUST_IMAGE}
+            env:
+              - name: CONFIG_HASH
+                value: TO_BE_CHANGED
+              - name: ATTACKED_HOST
+                valueFrom:
+                  configMapKeyRef:
+                    name: host-url
+                    key: ATTACKED_HOST
+              - name: LOCUST_MODE
+                value: MASTER
+              - name: LOCUST_OPTS
+                value: --print-stats
+            resources:
+              limits:
+                cpu: "100m"
+                memory: "256Mi"
+            ports:
+            - name: comm
+              containerPort: 5557
+            - name: comm-plus-1
+              containerPort: 5558
+            - name: web-ui
+              containerPort: 8089
+            volumeMounts:
+            - name: locust-scripts
+              mountPath: /locust
+              readOnly: true
+          dnsPolicy: ClusterFirst
+          restartPolicy: Always
+          securityContext:
+            privileged: false
+          volumes:
+          - name: locust-scripts
+            configMap:
+              name: script-file
+
+  - kind: ConfigMap
+    apiVersion: v1
+    metadata:
+      name: script-file
+      namespace: ${NAMESPACE}
+    data:
+      locustfile.py: |
+        from locust import HttpLocust, TaskSet, task
+
+
+        class UserTasks(TaskSet):
+
+            @task
+            def index(self):
+                self.client.get("/")
+
+            @task
+            def stats(self):
+                self.client.get("/stats/requests")
+
+
+        class WebsiteUser(HttpLocust):
+            task_set = UserTasks
+
+  - kind: ConfigMap
+    apiVersion: v1
+    metadata:
+      name: host-url
+      namespace: ${NAMESPACE}
+    data:
+      ATTACKED_HOST: http://locust-master:8089
+
+parameters:
+- name: NAMESPACE
+  displayName: Namespace
+  description: Namespace where the Locust is running
+  value: locust
+  required: true
+
+- name: LOCUST_IMAGE
+  displayName: Locust docker image
+  description: Name of the image to be used.
+  value: grubykarol/locust:0.11.0-python3.6-alpine3.9
+  required: true
