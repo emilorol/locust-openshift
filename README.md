@@ -1,6 +1,8 @@
 # Locust on OpenShift
 
-Run distributed load tests using Locust and OpenShift.
+Run distributed load tests using Locust and OpenShift. 
+
+Original idea and inspiration came from: https://medium.com/locust-io-experiments/locust-io-experiments-running-in-kubernetes-95447571a550
 
 ### Seed the project with your data to test
 
