@@ -64,7 +64,7 @@ objects:
               - name: LOCUST_MODE
                 value: MASTER
               - name: LOCUST_OPTS
-                value: --print-stats
+                value: --print-stats -P=8089
             resources:
               limits:
                 cpu: "100m"
@@ -131,5 +131,5 @@ parameters:
 - name: LOCUST_IMAGE
   displayName: Locust docker image
   description: Name of the image to be used.
-  value: grubykarol/locust:0.11.0-python3.6-alpine3.9
+  value: grubykarol/locust:0.13.5-python3.8-alpine3.11
   required: true
