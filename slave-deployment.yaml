@@ -30,8 +30,10 @@ objects:
                     key: ATTACKED_HOST
               - name: LOCUST_MODE
                 value: SLAVE
-              - name: LOCUST_MASTER
+              - name: LOCUST_MASTER_HOST
                 value: $(LOCUST_SERVICE_HOST)
+              - name: LOCUST_OPTS
+                value: -P=8089
             resources:
               limits:
                 cpu: "0.5"
@@ -99,5 +101,5 @@ parameters:
 - name: LOCUST_SLAVE_IMAGE
   displayName: Locust-Slave docker image
   description: Name of the image to be used.
-  value: grubykarol/locust:0.11.0-python3.6-alpine3.9
+  value: grubykarol/locust:0.13.5-python3.8-alpine3.11
   required: true
