@@ -1,18 +1,18 @@
 kind: Template
 apiVersion: v1
 labels:
-  template: "locust"
+  template: "service_name"
 metadata:
-  name: locust-master
+  name: service_name
 objects:
   - kind: Service
     apiVersion: v1
     metadata:
-      name: locust
+      name: service_name
       namespace: ${NAMESPACE}
     spec:
       selector:
-        app: locust-master
+        app: service_name
       ports:
         - name: "communication"
           protocol: TCP
@@ -28,41 +28,41 @@ objects:
   - apiVersion: route.openshift.io/v1
     kind: Route
     metadata:
-      name: app
+      name: service_name
     spec:
       port:
         targetPort: web-ui
       to:
         kind: Service
-        name: locust
+        name: service_name
         weight: 100
       wildcardPolicy: None
 
   - kind: DeploymentConfig
     apiVersion: v1
     metadata:
-      name: locust-master
+      name: service_name
       namespace: ${NAMESPACE}
     spec:
       replicas: 1
       template:
         metadata:
           labels:
-            app: locust-master
+            app: service_name
         spec:
           containers:
-          - name: locust-master
+          - name: service_name
             image: ${LOCUST_IMAGE}
             env:
-              - name: CONFIG_HASH
-                value: TO_BE_CHANGED
+              # - name: CONFIG_HASH
+              #   value: TO_BE_CHANGED
               - name: ATTACKED_HOST
                 valueFrom:
                   configMapKeyRef:
                     name: host-url
                     key: ATTACKED_HOST
-              - name: LOCUST_MODE
-                value: MASTER
+              - name: LOCUST_MODE_MASTER
+                value: "true"
               - name: LOCUST_OPTS
                 value: --print-stats -P=8089
             resources:
@@ -125,11 +125,11 @@ parameters:
 - name: NAMESPACE
   displayName: Namespace
   description: Namespace where the Locust is running
-  value: locust
+  value: labs-dev
   required: true
 
 - name: LOCUST_IMAGE
   displayName: Locust docker image
   description: Name of the image to be used.
-  value: grubykarol/locust:0.13.5-python3.8-alpine3.11
+  value: grubykarol/locust:1.2.3-python3.9-alpine3.12
   required: true

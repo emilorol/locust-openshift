@@ -1,36 +1,36 @@
 kind: Template
 apiVersion: v1
 labels:
-  template: "locust"
+  template: "service_name"
 metadata:
-  name: locust-slave
+  name: service_name
 objects:
   - kind: DeploymentConfig
     apiVersion: v1
     metadata:
-      name: locust-slave
+      name: service_name
       namespace: ${NAMESPACE}
     spec:
       replicas: 1
       template:
         metadata:
           labels:
-            app: locust-slave
+            app: service_name
         spec:
           containers:
-          - name: locust-slave
+          - name: service_name
             image: ${LOCUST_SLAVE_IMAGE}
             env:
-              - name: CONFIG_HASH
-                value: TO_BE_CHANGED
+              # - name: CONFIG_HASH
+              #   value: TO_BE_CHANGED
               - name: ATTACKED_HOST
                 valueFrom:
                   configMapKeyRef:
                     name: host-url
                     key: ATTACKED_HOST
-              - name: LOCUST_MODE
-                value: SLAVE
-              - name: LOCUST_MASTER_HOST
+              - name: LOCUST_MODE_WORKER
+                value: "true"
+              - name: LOCUST_MASTER_NODE_HOST
                 value: $(LOCUST_SERVICE_HOST)
               - name: LOCUST_OPTS
                 value: -P=8089
@@ -95,11 +95,11 @@ parameters:
 - name: NAMESPACE
   displayName: Namespace
   description: Namespace where the Locust is running
-  value: locust
+  value: labs-dev
   required: true
 
 - name: LOCUST_SLAVE_IMAGE
   displayName: Locust-Slave docker image
   description: Name of the image to be used.
-  value: grubykarol/locust:0.13.5-python3.8-alpine3.11
+  value: grubykarol/locust:1.2.3-python3.9-alpine3.12
   required: true
