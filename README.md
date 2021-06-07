@@ -50,28 +50,29 @@ $ chmod +x /usr/local/bin/oc
 $ oc login https://www.cluster-address.com
 ```
 
-* Create new project:
+* Create new project / login to your existing project: 
 
 ```
 $ oc new-project locust --display-name=Locust --description="Locust.io load tests cluster";
 ```
 
-* Select project namespace:
-
 ```
 $ oc project locust;
 ```
 
-* Deploy Locust `master` pod:
+* give the setup load test file permissions to run : 
 
 ```
-$ oc process -f master-deployment.yaml | oc create -f -
+$ chmod a+x setup_load_tests.sh
 ```
 
-* Deploy Locust `slave` pod:
+* change the project on line 36 of seed.sh
+
+* add host name to each load test file according to the format of locust_test_oc.py line 4
+
+
+* place all you load tests in the root directory
 
 ```
-$ oc process -f slave-deployment.yaml | oc create -f -
+$ ./setup_load_tests.sh
 ```
-
-__Note:__ the `slave-deployment.yaml` has the comment out code for setting up auto scaling the pods, but `Locust` will reset the test to distribute the load every time a new slave is added. You can manually create the `slave` pods before starting the test and destroy them when done.
