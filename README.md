@@ -66,6 +66,7 @@ $ oc project locust;
 $ chmod a+x setup_load_tests.sh
 ```
 
+* change the project on line 36, 53, 86 of seed.sh
 * change the project on line 36 of seed.sh
 
 * add host name to each load test file according to the format of locust_test_oc.py line 4

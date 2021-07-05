@@ -53,7 +53,7 @@ for fileName in ./*.py; do
     sed -i '' "s/${oldName}/${hostUrlName}/g" $newNameSlave
     
     # first create config variables
-    sh ./seed.sh $fileName $tempHost $onlyNamemaster $onlyNameslave $scriptName $hostUrlName
+    sh ./seed.sh $fileName $tempHost $onlyNamemaster $onlyNameslave $scriptName $hostUrlName $namespace
     
     # create deployments which consume the configs
     oc process -f $newName | oc create -f -
