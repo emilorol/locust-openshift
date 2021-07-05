@@ -33,7 +33,7 @@ kind: ConfigMap
 apiVersion: v1
 metadata:
   name: $hostUrlName
-  namespace: labs-dev
+  namespace: locust
 data:
   ATTACKED_HOST: $hostName
 EOF1
@@ -50,7 +50,7 @@ kind: ConfigMap
 apiVersion: v1
 metadata:
   name: $scriptName
-  namespace: labs-dev
+  namespace: locust
 data:
   locustfile.py: |
 $(cat $testFile | sed 's/^/    /')
@@ -65,7 +65,7 @@ cat config-map.yaml | oc apply -f -
 rm ./config-map.yaml
 
 # Update the environment variable to trigger a change
-oc project labs-dev
+oc project locust
 #oc set env dc/locust-master --overwrite CONFIG_HASH=`date +%s%N`
 #oc set env dc/locust-slave --overwrite CONFIG_HASH=`date +%s%N`
 

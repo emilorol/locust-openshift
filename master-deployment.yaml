@@ -29,6 +29,7 @@ objects:
     kind: Route
     metadata:
       name: service_name
+      namespace: ${NAMESPACE}
     spec:
       port:
         targetPort: web-ui
@@ -125,7 +126,7 @@ parameters:
 - name: NAMESPACE
   displayName: Namespace
   description: Namespace where the Locust is running
-  value: labs-dev
+  value: locust
   required: true
 
 - name: LOCUST_IMAGE

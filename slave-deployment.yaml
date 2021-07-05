@@ -11,7 +11,7 @@ objects:
       name: service_name
       namespace: ${NAMESPACE}
     spec:
-      replicas: 1
+      replicas: 2
       template:
         metadata:
           labels:
@@ -95,7 +95,7 @@ parameters:
 - name: NAMESPACE
   displayName: Namespace
   description: Namespace where the Locust is running
-  value: labs-dev
+  value: locust
   required: true
 
 - name: LOCUST_SLAVE_IMAGE
