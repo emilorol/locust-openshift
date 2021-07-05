@@ -1,4 +1,5 @@
 #!/bin/bash
+namespace=locust
 for fileName in ./*.py; do
     # extract host
     tempHost=$(grep '# host' $fileName)
