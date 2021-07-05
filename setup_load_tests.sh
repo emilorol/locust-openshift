@@ -1,5 +1,4 @@
 #!/bin/bash
-namespace=locust
 for fileName in ./*.py; do
     # extract host
     tempHost=$(grep '# host' $fileName)
@@ -54,7 +53,7 @@ for fileName in ./*.py; do
     sed -i '' "s/${oldName}/${hostUrlName}/g" $newNameSlave
     
     # first create config variables
-    sh ./seed.sh $fileName $tempHost $onlyNamemaster $onlyNameslave $scriptName $hostUrlName $namespace
+    sh ./seed.sh $fileName $tempHost $onlyNamemaster $onlyNameslave $scriptName $hostUrlName
     
     # create deployments which consume the configs
     oc process -f $newName | oc create -f -

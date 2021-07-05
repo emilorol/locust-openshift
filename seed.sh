@@ -6,9 +6,8 @@ dcMasterName=""
 dcSlaveName=""
 scriptName=""
 namespace=locust
-
 # Display prompt if not arguments passed
-if [[ -z "$1" && -z "$2" && -z "$3" && -z "$4" && -z "$5"  && -z "$6"  && -z "$7"]]
+if [[ -z "$1" && -z "$2" && -z "$3" && -z "$4" && -z "$5"  && -z "$6" ]]
 then
   read -p 'File to run: ' testFile
   read -p 'Host to attack: ' hostName
@@ -24,7 +23,6 @@ else
   dcSlaveName=$4
   scriptName=$5
   hostUrlName=$6
-  namespace=$7
 fi
 
 # Confirmation
