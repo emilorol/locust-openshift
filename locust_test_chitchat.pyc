@@ -1,0 +1,29 @@
+# import requests
+# import json
+
+# base_url = "http://15.206.63.149:8000"
+# params = {
+#     "query": "i am happy",
+# }
+
+# r = requests.get(base_url+"/get-chitchat", data=json.dumps(params))
+# response  = r.json()
+
+# print(response)
+
+import time, json
+from locust import HttpUser, task, between
+
+# host=http://15.206.63.149:8000
+
+class QuickstartUser(HttpUser):
+    wait_time = between(0, 1)
+
+    @task
+    def hello_world(self):
+        params = {
+            "query": "i am happy",
+        }
+
+        resp = self.client.get("/get-chitchat", data=json.dumps(params))
+        assert resp.status_code == 200
