@@ -1,6 +1,6 @@
 # Locust on OpenShift
 
-Run distributed load tests using Locust and OpenShift. 
+Run distributed load tests using Locust and OpenShift.
 
 Original idea and inspiration came from: https://medium.com/locust-io-experiments/locust-io-experiments-running-in-kubernetes-95447571a550
 
@@ -13,7 +13,6 @@ $ ./seed.sh file_name_with_test.py https://www.url-to-test.com
 ```
 
 __Note:__ the `seed.sh` use the `oc` command to push the changes.
-
 
 ### Install OC command
 
@@ -50,28 +49,28 @@ $ chmod +x /usr/local/bin/oc
 $ oc login https://www.cluster-address.com
 ```
 
-* Create new project:
+* Create new project / login to your existing project:
 
 ```
 $ oc new-project locust --display-name=Locust --description="Locust.io load tests cluster";
 ```
 
-* Select project namespace:
-
 ```
 $ oc project locust;
 ```
 
-* Deploy Locust `master` pod:
+* give the setup load test file permissions to run :
 
 ```
-$ oc process -f master-deployment.yaml | oc create -f -
+$ chmod a+x setup_load_tests.sh
 ```
 
-* Deploy Locust `slave` pod:
+* change the namespace on line 2 of setup_load_tests.sh
+* add host name to each load test file according to the format of locust_test_oc.py line 4
+* place all you load tests in the root directory
 
 ```
-$ oc process -f slave-deployment.yaml | oc create -f -
+$ ./setup_load_tests.sh
 ```
 
-__Note:__ the `slave-deployment.yaml` has the comment out code for setting up auto scaling the pods, but `Locust` will reset the test to distribute the load every time a new slave is added. You can manually create the `slave` pods before starting the test and destroy them when done.
+NOTE : You need to run dos2unix / unix2dos for the code to work as expected
